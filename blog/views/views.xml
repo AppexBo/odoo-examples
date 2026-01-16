@@ -1,0 +1,75 @@
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="blog.list">
+      <field name="name">Blog entry list</field>
+      <field name="model">blog.entry</field>
+      <field name="arch" type="xml">
+        <list>
+          <field name="title"/>
+          <field name="slug" />
+          <field name="author_id"/>
+          <field name="create_date"/>
+        </list>
+      </field>
+    </record>
+
+
+    <record model="ir.ui.view" id="blog.entry_form">
+      <field name="name">Blog entry form</field>
+      <field name="model">blog.entry</field>
+      <field name="arch" type="xml">
+        <form>
+          <sheet>
+            <group col="2">
+              <group>
+                <field name="title"/>
+              </group>
+              <group>
+                <field name="content"/>
+              </group>
+            </group>
+            <group>
+              <field name="tag_ids" widget="many2many_tags"/>
+            </group>
+            <notebook>
+              <page string="Information" name="information">
+                <group>
+                  <field name="slug" />
+                  <field name="author_id"/>
+                  <field name="create_date" readonly="1"/>
+                </group>
+              </page>
+            </notebook>
+          </sheet>
+        </form>
+      </field>
+    </record>
+    <!-- actions opening views on models -->
+
+    <record model="ir.actions.act_window" id="blog.action_window">
+      <field name="name">Blog entry action</field>
+      <field name="res_model">blog.entry</field>
+      <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- server action to the one above -->
+<!--
+    <record model="ir.actions.server" id="blog.action_server">
+      <field name="name">blog server</field>
+      <field name="model_id" ref="model_blog_blog"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+          "type": "ir.actions.act_window",
+          "view_mode": "list,form",
+          "res_model": model._name,
+        }
+      </field>
+    </record>
+-->
+
+    <menuitem name="Blog Entries" id="blog_entry_menu_root"/>
+    <menuitem name="Entries" id="blog_entry_menu_list" parent="blog.blog_entry_menu_root" action="blog.action_window"/>
+
+  </data>
+</odoo>
