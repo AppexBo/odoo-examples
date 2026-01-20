@@ -37,6 +37,9 @@ class BlogEntry(models.Model):
                 "name": title_word
             })
 
+    def get_title_date(self):
+        return f"{self.title} {self.create_date}"
+
 
 class BlogTag(models.Model):
     _name = "blog.tag"

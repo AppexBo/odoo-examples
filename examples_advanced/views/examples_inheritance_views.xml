@@ -41,6 +41,7 @@
             <field name="inherit_id" ref="examples_advanced.example_record_view_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//field[@name='value']" position="replace">
+                    <field name="currency_id" invisible="1"/>
                     <field name="value" widget="monetary" options="{'currency_field': 'currency_id'}"/>
                 </xpath>
             </field>

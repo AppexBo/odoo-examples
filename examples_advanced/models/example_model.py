@@ -10,6 +10,7 @@ class ExampleRecord(models.Model):
     active = fields.Boolean(string='Active', default=True)
     value = fields.Float(string='Value')
     partner_id = fields.Many2one('res.partner', string='Partner')
+    currency_id = fields.Many2one('res.currency', string='Currency', default=lambda self: self.env.company.currency_id)
 
     @api.model
     def get_records_count(self):

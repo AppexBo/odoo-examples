@@ -1,7 +1,7 @@
-from odoo import http
 from odoo.http import Controller, request, route
 
 
+# ObjectController
 class BlogController(Controller):
     @route('/blog/api/entries', type='json', auth='public', methods=['POST'])
     def get_entries_json(self, limit=10, offset=0, **kw):
@@ -26,14 +26,10 @@ class BlogController(Controller):
         if not entry.exists():
             return {'error': 'Entry not found'}
         return {
-            'id': entry.id,
             'title': entry.title,
             'content': entry.content,
             'slug': entry.slug,
-            'author': {
-                'id': entry.author_id.id,
-                'name': entry.author_id.name,
-            } if entry.author_id else None,
+            'author_id': [entry.author_id.id, entry.author_id.name],
             'create_date': entry.create_date.isoformat() if entry.create_date else None,
             'tags': [{'id': tag.id, 'name': tag.name} for tag in entry.tag_ids],
         }
