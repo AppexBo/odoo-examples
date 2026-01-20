@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_example_record">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.internal_layout">
+                    <div class="page">
+                        <div class="oe_structure"/>
+                        <div class="row">
+                            <div class="col-12">
+                                <h2><span t-field="o.name">Example Record</span></h2>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Name:</strong><br/>
+                                <span t-field="o.name">Record Name</span>
+                            </div>
+                            <div class="col-6">
+                                <strong>Value:</strong><br/>
+                                <span t-field="o.value">0.0</span>
+                            </div>
+                        </div>
+                        <div class="row mt32 mb32">
+                            <div class="col-6">
+                                <strong>Partner:</strong><br/>
+                                <span t-field="o.partner_id">Partner Name</span>
+                            </div>
+                            <div class="col-6">
+                                <strong>Active:</strong><br/>
+                                <span t-out="'Yes' if o.active else 'No'">Yes</span>
+                            </div>
+                        </div>
+                        <div class="row mt32 mb32" t-if="o.description">
+                            <div class="col-12">
+                                <strong>Description:</strong><br/>
+                                <p t-field="o.description">Record description</p>
+                            </div>
+                        </div>
+                        <div class="oe_structure"/>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_example_record_html">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="container mt-4">
+                        <div class="row">
+                            <div class="col-12">
+                                <h1 t-field="o.name">Example Record</h1>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Basic Information</h5>
+                                        <p class="card-text">
+                                            <strong>Name:</strong> <span t-field="o.name"/>
+                                        </p>
+                                        <p class="card-text">
+                                            <strong>Value:</strong> <span t-field="o.value"/>
+                                        </p>
+                                        <p class="card-text">
+                                            <strong>Active:</strong> 
+                                            <span t-out="'Yes' if o.active else 'No'"/>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Partner Information</h5>
+                                        <p class="card-text" t-if="o.partner_id">
+                                            <strong>Partner:</strong> <span t-field="o.partner_id"/>
+                                        </p>
+                                        <p class="card-text" t-else="">
+                                            <em>No partner assigned</em>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-4" t-if="o.description">
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Description</h5>
+                                        <p class="card-text" t-field="o.description"/>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_example_records_list">
+        <t t-call="web.html_container">
+            <t t-call="web.internal_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div class="row">
+                        <div class="col-12">
+                            <h2>Example Records List</h2>
+                            <p>Generated on <span t-out="context_timestamp(datetime.datetime.now()).strftime('%Y-%m-%d %H:%M')"/></p>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row mt32 mb32">
+                        <div class="col-12">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th class="text-start">Name</th>
+                                        <th class="text-start">Value</th>
+                                        <th class="text-start">Partner</th>
+                                        <th class="text-center">Active</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="docs" t-as="record">
+                                        <tr t-att-class="'table-secondary' if not record.active else ''">
+                                            <td><span t-field="record.name"/></td>
+                                            <td><span t-field="record.value"/></td>
+                                            <td>
+                                                <span t-field="record.partner_id" t-if="record.partner_id"/>
+                                                <span t-else=""><em>No partner</em></span>
+                                            </td>
+                                            <td class="text-center">
+                                                <span t-out="'Yes' if record.active else 'No'"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row mt32 mb32">
+                        <div class="col-12">
+                            <p><strong>Total Records:</strong> <span t-out="len(docs)"/></p>
+                        </div>
+                    </div>
+                    <div class="oe_structure"/>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

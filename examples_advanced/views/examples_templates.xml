@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="records_list_template" name="Records List">
+            <t t-call="web.layout">
+                <div class="container mt-4">
+                    <h1>Example Records List</h1>
+                    <div class="row">
+                        <t t-foreach="records" t-as="record">
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h5 class="card-title" t-out="record.name"/>
+                                        <p class="card-text" t-out="record.description"/>
+                                        <a t-attf-href="/examples/record/#{record.id}" class="btn btn-primary">
+                                            View Details
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </t>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="record_detail_template" name="Record Detail">
+            <t t-call="web.layout">
+                <div class="container mt-4">
+                    <h1 t-out="record.name"/>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5>Description</h5>
+                                    <p t-out="record.description"/>
+                                    <h5>Value</h5>
+                                    <p t-out="record.value"/>
+                                    <h5>Partner</h5>
+                                    <p t-out="record.partner_id.name or 'No Partner'"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+        <template id="simple_template" name="Simple Template">
+            <div class="example-template">
+                <h2>Simple QWeb Template Example</h2>
+                <p>This template demonstrates basic QWeb directives.</p>
+                <t t-if="condition">
+                    <p>This content is shown when condition is True</p>
+                </t>
+                <t t-else="">
+                    <p>This content is shown when condition is False</p>
+                </t>
+                <ul>
+                    <t t-foreach="items" t-as="item">
+                        <li t-out="item"/>
+                    </t>
+                </ul>
+            </div>
+        </template>
+
+        <template id="template_with_attributes" name="Template with Attributes">
+            <div>
+                <p t-att-class="css_class">Content with dynamic class</p>
+                <a t-attf-href="/path/#{record_id}">Link with dynamic href</a>
+                <img t-att-src="image_url" t-att-alt="image_alt"/>
+            </div>
+        </template>
+
+        <template id="template_using_set" name="Template Using Set">
+            <div>
+                <t t-set="computed_value" t-value="base_value * 2"/>
+                <t t-set="formatted_date" t-value="datetime.datetime.now().strftime('%Y-%m-%d')"/>
+                <p>Computed Value: <t t-out="computed_value"/></p>
+                <p>Date: <t t-out="formatted_date"/></p>
+            </div>
+        </template>
+    </data>
+</odoo>

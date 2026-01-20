@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_report_example_record" model="ir.actions.report">
+            <field name="name">Example Record Report</field>
+            <field name="model">example.record</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">examples_advanced.report_example_record</field>
+            <field name="report_file">examples_advanced.report_example_record</field>
+            <field name="print_report_name">'Report - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_example_record"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_report_example_record_html" model="ir.actions.report">
+            <field name="name">Example Record Report HTML</field>
+            <field name="model">example.record</field>
+            <field name="report_type">qweb-html</field>
+            <field name="report_name">examples_advanced.report_example_record_html</field>
+            <field name="report_file">examples_advanced.report_example_record_html</field>
+            <field name="binding_model_id" ref="model_example_record"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <record id="action_report_example_records_list" model="ir.actions.report">
+            <field name="name">Example Records List Report</field>
+            <field name="model">example.record</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">examples_advanced.report_example_records_list</field>
+            <field name="report_file">examples_advanced.report_example_records_list</field>
+            <field name="print_report_name">'Records List - %s' % (time.strftime('%Y-%m-%d'))</field>
+            <field name="binding_model_id" ref="model_example_record"/>
+            <field name="binding_type">report</field>
+            <field name="multi" eval="True"/>
+        </record>
+    </data>
+</odoo>

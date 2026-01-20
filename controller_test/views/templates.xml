@@ -9,7 +9,7 @@
       </xpath>
     </template>
     <template id="payment_page" name="payment_page" inherit_id="website_sale.payment">
-      <xpath expr="//div[@id='shop_payment']" position="inside">
+      <xpath expr="//div[@id='payment_method']" position="inside">
         <div class="custom-value alert alert-info mb-3" t-if="custom_value">
           <strong>Custom Information:</strong>
           <t t-esc="custom_value" />

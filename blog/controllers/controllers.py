@@ -1,22 +1,54 @@
-# -*- coding: utf-8 -*-
-# from odoo import http
+from odoo import http
+from odoo.http import Controller, request, route
 
 
-# class Blog(http.Controller):
-#     @http.route('/blog/blog', auth='public')
-#     def index(self, **kw):
-#         return "Hello, world"
+class BlogController(Controller):
+    @route('/blog/api/entries', type='json', auth='public', methods=['POST'])
+    def get_entries_json(self, limit=10, offset=0, **kw):
+        entries = request.env['blog.entry'].sudo().search_read(
+            [],
+            ['id', 'title', 'slug', 'author_id', 'create_date'],
+            limit=limit,
+            offset=offset,
+            order='create_date desc'
+        )
+        total = request.env['blog.entry'].sudo().search_count([])
+        return {
+            'entries': entries,
+            'total': total,
+            'limit': limit,
+            'offset': offset,
+        }
 
-#     @http.route('/blog/blog/objects', auth='public')
-#     def list(self, **kw):
-#         return http.request.render('blog.listing', {
-#             'root': '/blog/blog',
-#             'objects': http.request.env['blog.blog'].search([]),
-#         })
+    @route('/blog/api/entry/<int:entry_id>', type='json', auth='public', methods=['POST'])
+    def get_entry_json(self, entry_id, **kw):
+        entry = request.env['blog.entry'].sudo().browse(entry_id)
+        if not entry.exists():
+            return {'error': 'Entry not found'}
+        return {
+            'id': entry.id,
+            'title': entry.title,
+            'content': entry.content,
+            'slug': entry.slug,
+            'author': {
+                'id': entry.author_id.id,
+                'name': entry.author_id.name,
+            } if entry.author_id else None,
+            'create_date': entry.create_date.isoformat() if entry.create_date else None,
+            'tags': [{'id': tag.id, 'name': tag.name} for tag in entry.tag_ids],
+        }
 
-#     @http.route('/blog/blog/objects/<model("blog.blog"):obj>', auth='public')
-#     def object(self, obj, **kw):
-#         return http.request.render('blog.object', {
-#             'object': obj
-#         })
-
+    @route('/blog/api/search', type='json', auth='public', methods=['POST'])
+    def search_entries_json(self, query='', limit=10, **kw):
+        domain = [('title', 'ilike', query)] if query else []
+        entries = request.env['blog.entry'].sudo().search_read(
+            domain,
+            ['id', 'title', 'slug'],
+            limit=limit,
+            order='create_date desc'
+        )
+        return {
+            'query': query,
+            'entries': entries,
+            'count': len(entries),
+        }

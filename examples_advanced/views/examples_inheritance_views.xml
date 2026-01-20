@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="example_record_view_form_inherit" model="ir.ui.view">
+            <field name="name">example.record.form.inherit</field>
+            <field name="model">example.record</field>
+            <field name="inherit_id" ref="examples_advanced.example_record_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='name']" position="after">
+                    <field name="value" invisible="context.get('hide_value', False)"/>
+                </xpath>
+
+                <xpath expr="//notebook" position="inside">
+                    <page string="Additional Info" name="additional_info">
+                        <group>
+                            <field name="partner_id" readonly="1"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="example_record_view_tree_inherit" model="ir.ui.view">
+            <field name="name">example.record.list.inherit</field>
+            <field name="model">example.record</field>
+            <field name="inherit_id" ref="examples_advanced.example_record_view_tree"/>
+            <field name="arch" type="xml">
+                <field name="value" position="after">
+                    <field name="description" optional="show"/>
+                </field>
+
+                <xpath expr="//list" position="attributes">
+                    <attribute name="default_order">value desc, name asc</attribute>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="example_record_view_form_replace" model="ir.ui.view">
+            <field name="name">example.record.form.replace</field>
+            <field name="model">example.record</field>
+            <field name="inherit_id" ref="examples_advanced.example_record_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='value']" position="replace">
+                    <field name="value" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="example_record_view_form_before_after" model="ir.ui.view">
+            <field name="name">example.record.form.before.after</field>
+            <field name="model">example.record</field>
+            <field name="inherit_id" ref="examples_advanced.example_record_view_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//sheet" position="before">
+                    <div class="alert alert-info" role="status">
+                        This is added before the sheet
+                    </div>
+                </xpath>
+
+                <xpath expr="//sheet" position="after">
+                    <div class="alert alert-warning" role="status">
+                        This is added after the sheet
+                    </div>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

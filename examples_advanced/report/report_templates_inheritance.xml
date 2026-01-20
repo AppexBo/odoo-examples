@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_example_record_inherit" inherit_id="examples_advanced.report_example_record">
+        <xpath expr="//div[@class='row'][1]" position="after">
+            <div class="row mt32 mb32">
+                <div class="col-12">
+                    <div class="alert alert-info" role="status">
+                        <strong>Enhanced Report:</strong> This is additional information added via template inheritance.
+                    </div>
+                </div>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@class='oe_structure'][last()]" position="before">
+            <div class="row mt32 mb32">
+                <div class="col-12">
+                    <h3>Additional Details</h3>
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td><strong>Created Date:</strong></td>
+                                <td><span t-field="o.create_date"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Modified Date:</strong></td>
+                                <td><span t-field="o.write_date"/></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Created By:</strong></td>
+                                <td><span t-field="o.create_uid"/></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </xpath>
+    </template>
+
+    <template id="report_example_record_custom" inherit_id="examples_advanced.report_example_record">
+        <xpath expr="//t[@t-call='web.internal_layout']" position="replace">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <div class="oe_structure"/>
+                    <div class="row mb32">
+                        <div class="col-12 text-center">
+                            <h1 class="display-4">CUSTOM REPORT</h1>
+                            <p class="lead">Example Record Details</p>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <h2><span t-field="o.name">Example Record</span></h2>
+                        </div>
+                    </div>
+                    <br/>
+                    <div class="row mt32 mb32">
+                        <div class="col-6">
+                            <strong>Name:</strong><br/>
+                            <span t-field="o.name">Record Name</span>
+                        </div>
+                        <div class="col-6">
+                            <strong>Value:</strong><br/>
+                            <span t-field="o.value">0.0</span>
+                        </div>
+                    </div>
+                    <div class="oe_structure"/>
+                </div>
+            </t>
+        </xpath>
+    </template>
+</odoo>

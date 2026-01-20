@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="examples_advanced.BaseTemplate">
+        <div class="content">
+            <p>This is the base content.</p>
+        </div>
+    </t>
+
+    <t t-name="examples_advanced.BaseTemplateExtension" t-inherit="examples_advanced.BaseTemplate" t-inherit-mode="extension">
+        <xpath expr="//div[@class='content']" position="inside">
+            <div class="custom-content">
+                <p>This content is added via template inheritance (extension mode).</p>
+            </div>
+        </xpath>
+    </t>
+
+    <t t-name="examples_advanced.BaseTemplatePrimary" t-inherit="examples_advanced.BaseTemplate" t-inherit-mode="primary">
+        <div class="primary-template">
+            <h1>Primary Template Inheritance Example</h1>
+            <p>This completely replaces the base template (primary mode).</p>
+        </div>
+    </t>
+
+    <t t-name="examples_advanced.ExampleTemplate">
+        <div class="example-base-template">
+            <div class="header">
+                <h2>Base Template</h2>
+            </div>
+            <div class="body">
+                <p>This is the base template content</p>
+            </div>
+            <div class="footer">
+                <p>Base footer</p>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="examples_advanced.ExampleTemplateExtension" t-inherit="examples_advanced.ExampleTemplate" t-inherit-mode="extension">
+        <xpath expr="//div[@class='body']" position="inside">
+            <div class="additional-content">
+                <p>Additional content added via inheritance</p>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@class='footer']" position="replace">
+            <div class="footer">
+                <p>Replaced footer via inheritance</p>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@class='header']" position="after">
+            <div class="subheader">
+                <p>Subheader added after header</p>
+            </div>
+        </xpath>
+
+        <xpath expr="//div[@class='body']" position="before">
+            <div class="pre-body">
+                <p>Content added before body</p>
+            </div>
+        </xpath>
+    </t>
+</templates>
