@@ -13,7 +13,7 @@
     'author': "Appex Latam",
     'category': 'Examples',
     'version': '18.0.1.0.0',
-    'depends': ['base', 'web'],
+    'depends': ['base', 'web', 'sale'],
     'data': [
         'security/ir.model.access.csv',
         'views/examples_views.xml',
@@ -22,6 +22,7 @@
         'report/report_templates.xml',
         'report/report_templates_inheritance.xml',
         'report/ir_actions_report.xml',
+        'report/sale_order_report_inherit.xml',
     ],
     'assets': {
         'web.assets_backend': [

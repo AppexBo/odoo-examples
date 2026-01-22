@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- 
+        Siempre se define como template 
+        Siempre tiene un id
+        En el caso de que sea herencia se debe especificar el inherit_id
+        inherit_id='modulo.nombre_del_template'
+    -->
+    <template id="report_saleorder_document_inherit" inherit_id="sale.report_saleorder_document">
+        <xpath expr="//div[@id='informations']" position="inside">
+            <div t-if="doc.payment_term_id" class="col" name="informations_payment_term">
+                <strong>Terminos de pago para el cliente: </strong>
+                <t t-esc="doc.payment_term_id.name"/>
+            </div>
+        </xpath>
+
+        <xpath expr="//th[@name='th_description']" position="after">
+            <th name="th_internal_ref" class="text-start">Internal Reference</th>
+        </xpath>
+
+        <xpath expr="//td[@name='td_name']" position="after">
+            <td name="td_internal_ref" class="text-start" t-if="line.product_id.default_code">
+                <t t-esc="line.product_id.default_code"/>
+            </td>
+            <td name="td_internal_ref_empty" class="text-start" t-else="">
+                <span>Sin referencia interna</span>
+            </td>
+        </xpath>
+
+        <xpath expr="//td[@name='td_section_line']" position="attributes">
+            <attribute name="colspan">100</attribute>
+        </xpath>
+
+        <xpath expr="//td[@name='td_note_line']" position="attributes">
+            <attribute name="colspan">100</attribute>
+        </xpath>
+    </template>
+</odoo>

@@ -1,589 +1,509 @@
 {
-  "info": {
-    "_postman_id": "9aa3f06e-80ca-4940-af54-368a5600a6a7",
-    "name": "Odoo API Examples",
-    "description": "Collection demonstrating Odoo JSON RPC and custom JSON endpoints",
-    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "_exporter_id": "989977"
-  },
-  "item": [
-    {
-      "name": "JSON RPC - Standard Odoo API",
-      "item": [
-        {
-          "name": "Authenticate (Login)",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    if (jsonData.result) {",
-                  "        var uid = jsonData.result;",
-                  "        if (uid && typeof uid === 'number' && uid > 0) {",
-                  "            pm.environment.set('odoo_uid', uid.toString());",
-                  "            console.log('Authentication successful. UID:', uid);",
-                  "            pm.test('Authentication successful', function () {",
-                  "                pm.expect(uid).to.be.a('number');",
-                  "                pm.expect(uid).to.be.above(0);",
-                  "            });",
-                  "        } else {",
-                  "            console.error('Authentication failed. Result:', uid);",
-                  "            pm.test('Authentication failed', function () {",
-                  "                pm.expect(uid).to.not.be.false;",
-                  "            });",
-                  "        }",
-                  "    } else if (jsonData.error) {",
-                  "        console.error('Authentication error:', jsonData.error.message);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"common\",\n        \"method\": \"authenticate\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            \"{{odoo_username}}\",\n            \"{{odoo_password}}\",\n            {}\n        ]\n    },\n    \"id\": 1\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/jsonrpc",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "jsonrpc"
-              ]
-            },
-            "description": "Authenticate with Odoo using JSON RPC. This is the standard way to authenticate with Odoo API.\n\n**Important Notes:**\n- Verify that odoo_database, odoo_username, and odoo_password are correctly set in your environment variables\n- The authenticate method returns the user ID (uid) **directly as an integer**, not as an object\n- The test script automatically saves the UID to the environment variable 'odoo_uid'\n- If you get 'Access Denied', check:\n  1. Database name is correct (case-sensitive)\n  2. Username exists in the database\n  3. Password is correct\n  4. User is active and not blocked\n\n**Response Format:**\n```json\n{\n    \"jsonrpc\": \"2.0\",\n    \"result\": 2,  // UID as integer, or false if authentication fails\n    \"id\": 1\n}\n```\n\n**Example:** If authentication is successful and the user ID is 2, the result will be the number `2`, not `{\"uid\": 2}`."
-          },
-          "response": []
-        },
-        {
-          "name": "Search Read - Blog Entries",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    console.log('Found', jsonData.result.length, 'blog entries');",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"blog.entry\",  // Model name\n            \"search_read\",  // Method\n            [[[]]],  // Domain (empty = all records)\n            {\n                \"fields\": [\"title\", \"slug\", \"author_id\", \"create_date\"],\n                \"limit\": 10,\n                \"offset\": 0,\n                \"order\": \"create_date desc\"\n            }\n        ]\n    },\n    \"id\": 2\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/jsonrpc",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "jsonrpc"
-              ]
-            },
-            "description": "Search and read blog entries using JSON RPC. This demonstrates the standard Odoo ORM search_read method."
-          },
-          "response": []
-        },
-        {
-          "name": "Search Read - sale order",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    console.log('Found', jsonData.result.length, 'blog entries');",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"sale.order\",  // Model name\n            \"search_read\",  // Method\n            [[]],  // Domain (empty = all records)\n            {\n                \"fields\": [\"name\",\"company_id\",\"date_order\",\"amount_total\"],\n                \"limit\": 10,\n                \"offset\": 0,\n                \"order\": \"create_date desc\"\n            }\n        ]\n    }\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/jsonrpc",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "jsonrpc"
-              ]
-            },
-            "description": "Search and read blog entries using JSON RPC. This demonstrates the standard Odoo ORM search_read method."
-          },
-          "response": []
-        },
-        {
-          "name": "Return boolean",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    var jsonData = pm.response.json();",
-                  "    console.log('Found', jsonData.result.length, 'blog entries');",
-                  "}"
-                ],
-                "type": "text/javascript",
-                "packages": {},
-                "requests": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"sale.order\",  // Model name\n            \"search_read\",  // Method\n            [[]],  // Domain (empty = all records)\n            {\n                \"fields\": [\"name\",\"company_id\",\"date_order\",\"amount_total\"],\n                \"limit\": 10,\n                \"offset\": 0,\n                \"order\": \"create_date desc\"\n            }\n        ]\n    }\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/jsonrpc",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "jsonrpc"
-              ]
-            },
-            "description": "Search and read blog entries using JSON RPC. This demonstrates the standard Odoo ORM search_read method."
-          },
-          "response": []
-        },
-        {
-          "name": "Create - Blog Entry",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"blog.entry\",  // Model name\n            \"create\",  // Method\n            [{\n                \"title\": \"Hola Freelancers!\",\n                \"content\": \"<p>Esto es un hola desde la api</p>\"\n            }]\n        ]\n    }\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/jsonrpc",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "jsonrpc"
-              ]
-            },
-            "description": "Create a new blog entry using JSON RPC."
-          },
-          "response": []
-        },
-        {
-          "name": "Update - Blog Entry",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"blog.entry\",  // Model name\n            \"write\",  // Method\n            [[4], {  // IDs to update, fields to update\n                \"content\": \"<b>Contenido actualizado.</b>\"\n            }]\n        ]\n    }\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/jsonrpc",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "jsonrpc"
-              ]
-            },
-            "description": "Update a blog entry using JSON RPC. Replace [1] with the actual blog entry ID."
-          },
-          "response": []
-        },
-        {
-          "name": "Search Count",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"blog.entry\",  // Model name\n            \"search_count\",  // Method\n            [[]]  // Domain\n        ]\n    }\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/jsonrpc",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "jsonrpc"
-              ]
-            },
-            "description": "Get count of blog entries matching the domain."
-          },
-          "response": []
-        }
-      ],
-      "description": "Standard JSON RPC endpoints for interacting with Odoo ORM models"
-    },
-    {
-      "name": "Blog Module - Custom JSON Endpoints",
-      "item": [
-        {
-          "name": "Get Blog Entries (Paginated)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {\n        \"limit\": 10,\n        \"offset\": 0\n    }\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/blog/api/entries",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "blog",
-                "api",
-                "entries"
-              ]
-            },
-            "description": "Get paginated list of blog entries. Returns entries with id, title, slug, author_id, and create_date."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Blog Entry by ID",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {}\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/blog/api/entry/1",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "blog",
-                "api",
-                "entry",
-                "1"
-              ]
-            },
-            "description": "Get detailed information about a specific blog entry including content and tags. Replace '1' with the actual entry ID."
-          },
-          "response": []
-        },
-        {
-          "name": "Search Blog Entries",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {\n        \"query\": \"example\",\n        \"limit\": 10\n    }\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/blog/api/search",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "blog",
-                "api",
-                "search"
-              ]
-            },
-            "description": "Search blog entries by title. Returns matching entries with id, title, and slug."
-          },
-          "response": []
-        }
-      ],
-      "description": "Custom JSON endpoints provided by the blog module"
-    },
-    {
-      "name": "Controller Test Module - Extended Endpoints",
-      "item": [
-        {
-          "name": "Get Blog Entries with Content",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {\n        \"limit\": 10,\n        \"offset\": 0,\n        \"include_content\": true\n    }\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/blog/api/entries",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "blog",
-                "api",
-                "entries"
-              ]
-            },
-            "description": "Extended version of get_entries that includes full content when include_content=true. Provided by controller_test module."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Blog Statistics",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {}\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/blog/api/stats",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "blog",
-                "api",
-                "stats"
-              ]
-            },
-            "description": "Get blog statistics including total entries, total tags, and entries count by author. Provided by controller_test module."
-          },
-          "response": []
-        }
-      ],
-      "description": "Extended JSON endpoints provided by the controller_test module that inherit from blog module"
-    },
-    {
-      "name": "Examples Advanced Module - Custom Endpoints",
-      "item": [
-        {
-          "name": "Get Example Records Data",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {}\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/examples/api/data",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "examples",
-                "api",
-                "data"
-              ]
-            },
-            "description": "Get all example records with id, name, and value. Requires authentication (auth='user')."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Example Records Count",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {}\n}"
-            },
-            "url": {
-              "raw": "{{odoo_base_url}}/examples/api/count",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "examples",
-                "api",
-                "count"
-              ]
-            },
-            "description": "Get count of example records. Public endpoint (auth='public').\n\n**Important:** This endpoint uses `type='json'`, which means it requires a JSON body even if it's empty (`{}`)."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Example Records Count (GET)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "url": {
-              "raw": "{{odoo_base_url}}/examples/api/count",
-              "host": [
-                "{{odoo_base_url}}"
-              ],
-              "path": [
-                "examples",
-                "api",
-                "count"
-              ]
-            },
-            "description": "Alternative GET method for count endpoint. Note: Even though this is a GET request, Odoo endpoints with type='json' require a JSON body (can be empty {})."
-          },
-          "response": []
-        }
-      ],
-      "description": "Custom JSON endpoints provided by the examples_advanced module"
-    }
-  ],
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
-      }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
-      }
-    }
-  ],
-  "variable": [
-    {
-      "key": "odoo_base_url",
-      "value": "http://localhost:8069",
-      "type": "string"
-    },
-    {
-      "key": "odoo_database",
-      "value": "intn",
-      "type": "string"
-    },
-    {
-      "key": "odoo_username",
-      "value": "admin",
-      "type": "string"
-    },
-    {
-      "key": "odoo_password",
-      "value": "admin",
-      "type": "string"
-    },
-    {
-      "key": "odoo_uid",
-      "value": "",
-      "type": "string"
-    },
-    {
-      "key": "odoo_session_id",
-      "value": "",
-      "type": "string"
-    }
-  ]
+	"info": {
+		"_postman_id": "odoo-api-examples",
+		"name": "Odoo API Examples",
+		"description": "Collection demonstrating Odoo JSON RPC and custom JSON endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "JSON RPC - Standard Odoo API",
+			"item": [
+				{
+					"name": "Authenticate (Login)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.result) {",
+									"        var uid = jsonData.result;",
+									"        if (uid && typeof uid === 'number' && uid > 0) {",
+									"            pm.environment.set('odoo_uid', uid.toString());",
+									"            console.log('Authentication successful. UID:', uid);",
+									"            pm.test('Authentication successful', function () {",
+									"                pm.expect(uid).to.be.a('number');",
+									"                pm.expect(uid).to.be.above(0);",
+									"            });",
+									"        } else {",
+									"            console.error('Authentication failed. Result:', uid);",
+									"            pm.test('Authentication failed', function () {",
+									"                pm.expect(uid).to.not.be.false;",
+									"            });",
+									"        }",
+									"    } else if (jsonData.error) {",
+									"        console.error('Authentication error:', jsonData.error.message);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"common\",\n        \"method\": \"authenticate\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            \"{{odoo_username}}\",\n            \"{{odoo_password}}\",\n            {}\n        ]\n    },\n    \"id\": 1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/jsonrpc",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"jsonrpc"
+							]
+						},
+						"description": "Authenticate with Odoo using JSON RPC. This is the standard way to authenticate with Odoo API.\n\n**Important Notes:**\n- Verify that odoo_database, odoo_username, and odoo_password are correctly set in your environment variables\n- The authenticate method returns the user ID (uid) **directly as an integer**, not as an object\n- The test script automatically saves the UID to the environment variable 'odoo_uid'\n- If you get 'Access Denied', check:\n  1. Database name is correct (case-sensitive)\n  2. Username exists in the database\n  3. Password is correct\n  4. User is active and not blocked\n\n**Response Format:**\n```json\n{\n    \"jsonrpc\": \"2.0\",\n    \"result\": 2,  // UID as integer, or false if authentication fails\n    \"id\": 1\n}\n```\n\n**Example:** If authentication is successful and the user ID is 2, the result will be the number `2`, not `{\"uid\": 2}`."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Read - Blog Entries",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    console.log('Found', jsonData.result.length, 'blog entries');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"blog.entry\",  // Model name\n            \"search_read\",  // Method\n            [[]],  // Domain (empty = all records)\n            {\n                \"fields\": [\"id\", \"title\", \"slug\", \"author_id\", \"create_date\"],\n                \"limit\": 10,\n                \"offset\": 0,\n                \"order\": \"create_date desc\"\n            }\n        ]\n    },\n    \"id\": 2\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/jsonrpc",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"jsonrpc"
+							]
+						},
+						"description": "Search and read blog entries using JSON RPC. This demonstrates the standard Odoo ORM search_read method."
+					},
+					"response": []
+				},
+				{
+					"name": "Create - Blog Entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"blog.entry\",  // Model name\n            \"create\",  // Method\n            [{\n                \"title\": \"My New Blog Entry\",\n                \"content\": \"<p>This is the content of my new blog entry.</p>\"\n            }]\n        ]\n    },\n    \"id\": 3\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/jsonrpc",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"jsonrpc"
+							]
+						},
+						"description": "Create a new blog entry using JSON RPC."
+					},
+					"response": []
+				},
+				{
+					"name": "Update - Blog Entry",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"blog.entry\",  // Model name\n            \"write\",  // Method\n            [[1], {  // IDs to update, fields to update\n                \"title\": \"Updated Blog Entry Title\",\n                \"content\": \"<p>Updated content.</p>\"\n            }]\n        ]\n    },\n    \"id\": 4\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/jsonrpc",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"jsonrpc"
+							]
+						},
+						"description": "Update a blog entry using JSON RPC. Replace [1] with the actual blog entry ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Count",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"call\",\n    \"params\": {\n        \"service\": \"object\",\n        \"method\": \"execute_kw\",\n        \"args\": [\n            \"{{odoo_database}}\",\n            {{odoo_uid}},\n            \"{{odoo_password}}\",\n            \"blog.entry\",  // Model name\n            \"search_count\",  // Method\n            [[]]  // Domain\n        ]\n    },\n    \"id\": 5\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/jsonrpc",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"jsonrpc"
+							]
+						},
+						"description": "Get count of blog entries matching the domain."
+					},
+					"response": []
+				}
+			],
+			"description": "Standard JSON RPC endpoints for interacting with Odoo ORM models"
+		},
+		{
+			"name": "Blog Module - Custom JSON Endpoints",
+			"item": [
+				{
+					"name": "Get Blog Entries (Paginated)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {\n        \"limit\": 10,\n        \"offset\": 0\n    }\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/blog/api/entries",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"blog",
+								"api",
+								"entries"
+							]
+						},
+						"description": "Get paginated list of blog entries. Returns entries with id, title, slug, author_id, and create_date."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Blog Entry by ID",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {}\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/blog/api/entry/1",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"blog",
+								"api",
+								"entry",
+								"1"
+							]
+						},
+						"description": "Get detailed information about a specific blog entry including content and tags. Replace '1' with the actual entry ID."
+					},
+					"response": []
+				},
+				{
+					"name": "Search Blog Entries",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {\n        \"query\": \"example\",\n        \"limit\": 10\n    }\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/blog/api/search",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"blog",
+								"api",
+								"search"
+							]
+						},
+						"description": "Search blog entries by title. Returns matching entries with id, title, and slug."
+					},
+					"response": []
+				}
+			],
+			"description": "Custom JSON endpoints provided by the blog module"
+		},
+		{
+			"name": "Controller Test Module - Extended Endpoints",
+			"item": [
+				{
+					"name": "Get Blog Entries with Content",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {\n        \"limit\": 10,\n        \"offset\": 0,\n        \"include_content\": true\n    }\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/blog/api/entries",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"blog",
+								"api",
+								"entries"
+							]
+						},
+						"description": "Extended version of get_entries that includes full content when include_content=true. Provided by controller_test module."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Blog Statistics",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {}\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/blog/api/stats",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"blog",
+								"api",
+								"stats"
+							]
+						},
+						"description": "Get blog statistics including total entries, total tags, and entries count by author. Provided by controller_test module."
+					},
+					"response": []
+				}
+			],
+			"description": "Extended JSON endpoints provided by the controller_test module that inherit from blog module"
+		},
+		{
+			"name": "Examples Advanced Module - Custom Endpoints",
+			"item": [
+				{
+					"name": "Get Example Records Data",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {}\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/examples/api/data",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"examples",
+								"api",
+								"data"
+							]
+						},
+						"description": "Get all example records with id, name, and value. Requires authentication (auth='user')."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Example Records Count",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"jsonrpc\": \"2.0\",\n    \"params\": {}\n}"
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/examples/api/count",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"examples",
+								"api",
+								"count"
+							]
+						},
+						"description": "Get count of example records. Public endpoint (auth='public').\n\n**Important:** This endpoint uses `type='json'`, which means it requires a JSON body even if it's empty (`{}`)."
+					},
+					"response": []
+				},
+				{
+					"name": "Get Example Records Count (GET)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{odoo_base_url}}/examples/api/count",
+							"host": [
+								"{{odoo_base_url}}"
+							],
+							"path": [
+								"examples",
+								"api",
+								"count"
+							]
+						},
+						"description": "Alternative GET method for count endpoint. Note: Even though this is a GET request, Odoo endpoints with type='json' require a JSON body (can be empty {})."
+					},
+					"response": []
+				}
+			],
+			"description": "Custom JSON endpoints provided by the examples_advanced module"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "odoo_base_url",
+			"value": "http://localhost:8069",
+			"type": "string"
+		},
+		{
+			"key": "odoo_database",
+			"value": "intn",
+			"type": "string"
+		},
+		{
+			"key": "odoo_username",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"key": "odoo_password",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"key": "odoo_uid",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "odoo_session_id",
+			"value": "",
+			"type": "string"
+		}
+	]
 }
